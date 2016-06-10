@@ -38,7 +38,28 @@ It has the following functions:
 	createStations(num_stations, attr, attr_max) :
 	creates a number of stations, randomly assigning their xy-coord and attribute up to a maximum.
 
-	Barnes(attr, alpha, gamma):
-	The most important function, this runs a Barnes analysis on the Grid.
-	When it is finished sets the attribute value of Points in the Grid to be the value calculated by the Barnes analysis.
+-------------------
+|The Analysis File|
+-------------------
 
+This file only holds the Barnes analysis function for the moment, but more
+analysis related functions will be stored here.
+
+		Barnes(grid, attr, alpha, gamma, station_view=False):
+		The most important function, this runs a Barnes analysis on a Grid.
+		When it is finished it returns a list of the attribute values of Points in the Grid as calculated by its interpolation.
+
+		grid  = The Grid object we are analzing
+		attr  = The attribute we want to analyze
+		alpha = Controls the radius of influence each station has
+		gamma = Controls how much smoothing the second pass does
+
+		setting station_view to True plots the stations original values so you can more easily see their influence on the graph.
+
+		This function does the following:
+			-For every point we know information about (called a station) create a weight (www) from that station to every other point.
+
+			-Next the first pass of interpolation is run, for every point a g_init(i,j) value is calculated as:
+			the sum of [weight(i,j)*station[k].value] for all k stations divided by the sum of [weight(i,j)] for all k stations
+
+			-Finally the last pass of interpolation (the smoothing path) is run. Here a weighted difference between stations and points is added to g_init. This pass is less intuitive, but it essentially smooths the edges and stations out.

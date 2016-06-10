@@ -1,31 +1,7 @@
-import math
+import math, sys, random
+import numpy as np
+import analysis
 import Mapper
-import sys
-import random
-
-def newList3(x, y, z):
-	new_list = []
-	for k in range(z):
-		row1 = []
-		for j in range(y):
-			row2 = []
-			for i in range(x):
-				row2.append(0.0)
-			row1.append(row2)
-		new_list.append(row1)
-
-	return new_list
-
-def newList2(x,y):
-	new_list = []
-	for j in range(y):
-		row = []
-		for i in range(x):
-			row.append(0.0)
-		new_list.append(row)
-
-	return new_list
-
 
 class Point:
 
@@ -35,38 +11,57 @@ class Point:
 
 		self.station = station #true or false depending on if we already know information about this point.
 
-		self.attributes = {"ss": ss, "bs": bs,
-						   "so": so, "bo": bo}
+		self.attributes = {"surface salinity": ss,
+						   "bottom salinity" : bs,
+						   "surface oxygen"  : so,
+						   "bottom oxygen"   : bo}
 
+	#returns True or False if this point is a station
 	def isStation(self): return self.station
 
-	#calculates the distance between points
+	#get and set commands for the attributes of this point
+	def setAttr(self, attr, value): self.attributes[attr] = value
+	def getAttr(self, attr): return self.attributes[attr]
+
+	#calculates the distance between this point and another
 	def distance(self, point): return math.sqrt((point.x - self.x)**2 + (point.y - self.y)**2)
 
-	def setAttribute(self, attr, value): self.attributes[attr] = value
-	def getAttribute(self, attr): return self.attributes[attr]
+	#calculates the residual between the attributes of this point and another.
+	def residual(self, point, attr): return (point.getAttr(attr) - self.getAttr(attr))
 
-	#resets this data point, useful for doing an analysis multiple times.
+	#resets the attributes of this point to 0, useful for doing more than one analysis.
 	def reset(self):
-		self.attributes = {"ss": 0.0, "bs": 0.0,
-						   "so": 0.0, "bo": 0.0}
+		self.attributes = {"surface salinity": 0.0,
+						   "bottom salinity" : 0.0,
+						   "surface oxygen"  : 0.0,
+						   "bottom oxygen"   : 0.0}
 
 class Grid:
 
 	def __init__(self, points=[[]]):
 
 		self.points   = points
-		self.stations = []
+		#self.stations = [] might not need this with how stations are added.
 
+	#returns the number of points in the grids array.
+	def getSize(self): return len(self.points)*len(self.points[0])
+
+	#returns the dimensions of this grid.
+	def getShape(self): return (len(self.points),len(self.points[0]))
+
+	#returns the list of points in the grid.
+	def getPoints(self): return self.points
+
+	#returns a list of stations in this grid.
 	def getStations(self):
 		stations = []
-		for points in self.points:
-			for point in points:
-				if point.isStation():
-					stations.append(point)
-		self.stations = stations
+		for row in self.points:
+			for point in row:
+				if point.isStation(): stations.append(point)
+		return stations
 
-	#creates a grid of dummy points
+
+	#creates a grid of dummy points.
 	def createPoints(self, x_amount, y_amount):
 		points = []
 		for y in range(y_amount):
@@ -76,124 +71,38 @@ class Grid:
 			points.append(row)
 		self.points = points
 
-	#resets all the points that are not stations.
-	def resetPoints(self):
-		for point in self.points:
-			if not (point.isStation()):
-				point.reset()
+	#creates a number of random stations with a random attr-value < max_value
+	def createStations(self, num, attr, max_value):
+		for i in range(num):
+			y = random.randint(0, len(self.points)-1)
+			x = random.randint(0, len(self.points[y])-1)
+			self.points[y][x].station = True
+			self.points[y][x].setAttr(attr, random.randint(0, max_value))
 
-	#sets everything about a point.
-	def setPoint(self, x, y, station, ss, bs, so, bo):
-		self.points[y][x].station = station
-		self.points[y][x].attributes["ss"] = ss
-		self.points[y][x].attributes["bs"] = bs
-		self.points[y][x].attributes["so"] = so
-		self.points[y][x].attributes["bo"] = bo
 
-	def printGrid(self, attr):
-		lines = ""
-		for j in range(len(self.points)):
-			line = ""
-			for i in range(len(self.points[j])):
-				line += "%s  " % (self.points[j][i].getAttribute(attr))
-			lines += line + "\n"
 
-		print lines
-
+	#returns a list of attribute values, as opposed to a list of point objects, useful when graphing.
 	def getAttrList(self, attr):
-		new_list = []
+		attr_list = []
 		for j in range(len(self.points)):
 			row = []
-			for i in range(len(self.points[j])):
-				row.append(self.points[j][i].getAttribute(attr))
-			new_list.append(row)
-		return new_list
+			for point in (self.points[j]):
+				row.append(point.getAttr(attr))
+			attr_list.append(row)
+		return attr_list
 
-	#creates a bunch of random stations for testing
-	def createStations(self, num_stations, attr, attr_max):
-		for i in range(num_stations):
-			y = random.randint(0,len(self.points)-1)
-			x = random.randint(0,len(self.points[y])-1)
-			self.points[y][x].station = True
-			self.points[y][x].attributes[attr] = random.randint(0,attr_max)
+	#returns a list of the residual values between this grid and another.
+	def getResidualList(self, grid, attr):
+		resid_list = []
 
+		if self.getShape() != grid.getShape():
+			print "dimension error: grids are of different shapes"
 
-	def Barnes(self, attr, alpha, gamma):
-		print len(self.points[0]), len(self.points), len(self.stations), '\n\n\n'
-		w = newList3(len(self.points[0]), len(self.points), len(self.stations))
-		alpha = 5.052*((2*alpha)/math.pi)**2
-		#self.printGrid(attr)
-		print "calculating w-values\n\n"
-		for k in range(len(self.stations)):
-			for j in range(len(self.points)):
-				for i in range(len(self.points[j])):
-					#if not self.points[j][i].isStation():
-					if True:
-						d          = self.points[j][i].distance(self.stations[k])
-						w[k][j][i] = math.exp(-(d**2)/alpha)
+		else:
+			shape = self.getShape()
+			for y in shape[0]:
+				for x in shape[1]:
+					resid = self.points[y][x].residual(grid.points[y][x], attr)
+					resid_list.append(resid)
 
-					else:
-						w[k][j][i] = 0.0
-
-		g_init = newList2(len(self.points[0]), len(self.points))
-		print "running first pass\n\n"
-		for j in range(len(self.points)):
-			for i in range(len(self.points[j])):
-				#if not self.points[j][i].isStation():
-				if True:
-					w_sum = 0.0
-					g_init[j][i] = 0.0
-					for k in range(len(self.stations)):
-						g_init[j][i] += w[k][j][i]*self.stations[k].getAttribute(attr)
-						w_sum += w[k][j][i]
-
-					try:
-						g_init[j][i] /= w_sum
-					except:
-						g_init[j][i] = 0.0
-
-				else:
-					g_init[j][i] = 0.0
-
-		g_final = newList2(len(self.points[0]), len(self.points))
-		print "running second pass\n\n"
-		for j in range(len(self.points)):
-			for i in range(len(self.points[j])):
-				#if not self.points[j][i].isStation():
-				if True:
-					dif_sum = 0.0
-					for k in range(len(self.stations)):
-						d = self.points[j][i].distance(self.stations[k])
-						dif_sum += (self.stations[k].getAttribute(attr) - g_init[j][i])*math.exp(-(d**2)/(gamma*alpha))
-
-					g_final[j][i] = g_init[j][i] + dif_sum
-
-				else:
-					g_final[j][i] = self.points[j][i].getAttribute(attr)
-
-		for j in range(len(self.points)):
-			for i in range(len(self.points[j])):
-				self.points[j][i].setAttribute(attr, g_final[j][i])
-
-
-def main():
-	#try:
-	grid = Grid()
-	grid.createPoints(100,100)
-	grid.createStations(50, "ss", 50)
-	grid.getStations()
-
-	grid.Barnes("ss", 7, .8)
-
-	#grid.printGrid("ss")
-
-	Mapper.map(grid.getAttrList("ss"))
-
-	#except:
-	#	print("Unexpected error:", sys.exc_info()[0])
-	#	raw_input()
-
-
-if __name__ == "__main__":
-	main()
-	raw_input()
+		return resid_list
