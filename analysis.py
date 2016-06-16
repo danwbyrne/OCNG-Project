@@ -26,6 +26,8 @@ def Barnes(grid, attr, alpha, gamma, station_view=False):
 				ddd          = points[j][i].distance(stations[k]) #distance from point at i,j to station k.
 				www[j][i][k] = math.exp(-(ddd**2)/alpha)
 
+	print www[0]
+
 	#running the first pass of interpolation.
 	print "Running first pass of interpolation\n"
 	for j in range(shape[0]):
@@ -34,7 +36,10 @@ def Barnes(grid, attr, alpha, gamma, station_view=False):
 			for k in range(len(stations)):
 				g_init[j][i] += www[j][i][k]*stations[k].getAttr(attr)
 				w_sum        += www[j][i][k]
-			g_init[j][i] /= w_sum #for some reason I get some divide by 0 errors here, look into it.	
+			try:
+				g_init[j][i] /= w_sum #for some reason I get some divide by 0 errors here, look into it.
+			except:
+				g_init[j][i] = 0.0	
 
 
 	#running the second pass of interpolation.
@@ -52,4 +57,4 @@ def Barnes(grid, attr, alpha, gamma, station_view=False):
 			if not points[j][i].isStation():
 				points[j][i].setAttr(attr, g_final[j][i])
 
-	return points
+	return g_final

@@ -1,13 +1,12 @@
 import math, sys, random
 import numpy as np
 import analysis
-import Mapper
 
 class Point:
 
-	def __init__(self, x, y, station=False, ss = 0.0, bs = 0.0, so = 0.0, bo = 0.0):
-		self.x       = x       #x-coordinate in the GRID
-		self.y       = y       #y-coordinate in the GRID
+	def __init__(self, lon, lat, station=False, ss = 0.0, bs = 0.0, so = 0.0, bo = 0.0):
+		self.x       = lon       #x-coordinate in the GRID
+		self.y       = lat       #y-coordinate in the GRID
 
 		self.station = station #true or false depending on if we already know information about this point.
 
@@ -24,7 +23,19 @@ class Point:
 	def getAttr(self, attr): return self.attributes[attr]
 
 	#calculates the distance between this point and another
-	def distance(self, point): return math.sqrt((point.x - self.x)**2 + (point.y - self.y)**2)
+	#uses the haversine formula to calculate this
+	def distance(self, point):
+		rrr      = 6371. #mean distance of earths radius, in km
+		lat1     = math.radians(self.x)
+		lat2     = math.radians(point.x)
+		lat_dif  = math.radians(point.x - self.x)
+		lon_dif  = math.radians(point.y - self.y)
+
+		aaa      = (math.sin(lat_dif/2))**2 + math.cos(lat1)*math.cos(lat2) * (math.sin(lon_dif/2))**2
+		ccc      = 2 * math.atan2(math.sqrt(aaa), math.sqrt(1.-aaa))
+
+		return rrr*ccc
+
 
 	#calculates the residual between the attributes of this point and another.
 	def residual(self, point, attr): return (point.getAttr(attr) - self.getAttr(attr))
@@ -38,10 +49,10 @@ class Point:
 
 class Grid:
 
-	def __init__(self, points=[[]]):
+	def __init__(self, points=[[]], stations = []):
 
 		self.points   = points
-		#self.stations = [] might not need this with how stations are added.
+		self.stations = stations
 
 	#returns the number of points in the grids array.
 	def getSize(self): return len(self.points)*len(self.points[0])
@@ -53,15 +64,11 @@ class Grid:
 	def getPoints(self): return self.points
 
 	#returns a list of stations in this grid.
-	def getStations(self):
-		stations = []
-		for row in self.points:
-			for point in row:
-				if point.isStation(): stations.append(point)
-		return stations
+	def getStations(self): return self.stations
 
 
 	#creates a grid of dummy points.
+	#this is really just a testing function, no other uses.
 	def createPoints(self, x_amount, y_amount):
 		points = []
 		for y in range(y_amount):
@@ -72,6 +79,7 @@ class Grid:
 		self.points = points
 
 	#creates a number of random stations with a random attr-value < max_value
+	#this is really just a testing function, no other uses.
 	def createStations(self, num, attr, max_value):
 		for i in range(num):
 			y = random.randint(0, len(self.points)-1)

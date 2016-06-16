@@ -1,4 +1,5 @@
 import csv
+import os
 
 #formatting stuff, its kind of nasty and preliminary set up of the 
 #csv files can be neccessary to get rid of unneccesary titles etc.
@@ -24,17 +25,20 @@ def readCSV(filedir):
 
 	return return_dicts
 
+#reads in all CSV files in this directory
+def multiRead(filedir):
+	return_dicts = []
+	for file in os.listdir(filedir):
+		if file.endswith(".csv"):
+			return_dicts.extend(readCSV(filedir + file))
 
-
-
-
-
+	return return_dicts
 
 
 
 
 if __name__ == "__main__":
-	filedir = "C:\\Users\\User\\Desktop\\OCNG Project\\CSVs\\R2-0318\\R2-0318_bottom_DO_001-010.csv"
-	return_dicts = readCSV(filedir)
+	filedir = "C:\\Users\\User\\Desktop\\OCNG Project\\CSVs\\R2-0318\\"
+	return_dicts = multiRead(filedir)
 	for data in return_dicts:
 		print data['Longitude'] , data['Latitude'], data['OxMgL']

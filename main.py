@@ -1,4 +1,5 @@
 from Grid import *
+import CSVtoPoints
 import Mapper
 
 def test1():
@@ -24,12 +25,15 @@ def test2():
 			titles.append("Interpolation with alpha = %s" % (alpha))
 		Mapper.multiPlot(data_list, titles, "Gamma-%s.pdf" % (gamma))
 
+def test3():
+	filedir  = "C:\\Users\\User\\Desktop\\OCNG Project\\CSVs\\R2-0318\\"
+	dicts    = CSVtoPoints.multiRead(filedir)
 
-
+	Mapper.map_test(dicts, 100, 'OxMgL')
 
 
 
 
 
 if __name__ == "__main__":
-	test2()
+	test3()
