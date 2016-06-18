@@ -56,13 +56,13 @@ def BarnesMap(filedir, dn, attr, alpha, gamma, show=True, pdf_name=None):
 	dates = converted_dates
 
 	#calculate the time range the data was collected in
-	min_time   = time.strftime("%d-%B-%y %H:%M:%S",time.localtime(min(dates)))
-	max_time   = time.strftime("%d-%B-%y %H:%M:%S",time.localtime(max(dates)))
+	min_time   = time.strftime("%d-%b-%y %H:%M:%S",time.localtime(min(dates)))
+	max_time   = time.strftime("%d-%b-%y %H:%M:%S",time.localtime(max(dates)))
 	time_range = min_time + " to " + max_time
 	
 	#calculate boundary points, also applies some padding to get a nice int boundary.
 	max_lon,min_lon = int(max(lons)+1),int(min(lons)-1)
-	max_lat,min_lat = int(max(lats)+1),int(min(lats)-1)
+	max_lat,min_lat = int(max(lats)+1),int(min(lats))+.5
 	bounds          = [max_lon, min_lon, max_lat, min_lat]
 
 	#creates a mesh grid over the boundaries size dn apart.
@@ -97,4 +97,4 @@ def multiBarnes(filedir, dn, attr, alpha, gamma_range, pdf_dir):
 
 if __name__ == "__main__":
 	filedir = "C:\\Users\\Daniel Byrne\\Desktop\\OCNG-Project\\CSVs\\R2-0318\\"
-	BarnesMap(filedir, .01, "OxMgL", 7, .5, show=True, pdf_name="Plots\\Objective Analysis of Oxygen Content.pdf")
+	BarnesMap(filedir, .01, "OxMgL", 7, .5, show=False, pdf_name="Plots\\Objective-Analysis-of-Oxygen-Content.pdf")

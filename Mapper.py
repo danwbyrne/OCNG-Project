@@ -49,9 +49,10 @@ def objectiveMap(bounds, x, y, values, station_locs=[], title='', cbar_label='',
 	gradient = ['red','yellow','green']
 	cmap     = mpl.colors.LinearSegmentedColormap.from_list('my_colormap', gradient, 256)
 
-	fig = pyplot.figure(figsize=(10,10))
+	fig = pyplot.figure(figsize=(12,12))
 	title = pyplot.title(title)
 	title.set(y = title.get_position()[1] + .05)
+	title.set(x = title.get_position()[0] - .01)
 
 	#create the basemap using max-min lat/lon data from input data.
 	m = Basemap(llcrnrlon=bounds[1], llcrnrlat=bounds[3],
