@@ -33,12 +33,3 @@ def multiRead(filedir):
 			return_dicts.extend(readCSV(filedir + file))
 
 	return return_dicts
-
-
-
-
-if __name__ == "__main__":
-	filedir = "C:\\Users\\User\\Desktop\\OCNG Project\\CSVs\\R2-0318\\"
-	return_dicts = multiRead(filedir)
-	for data in return_dicts:
-		print data['Longitude'] , data['Latitude'], data['OxMgL']

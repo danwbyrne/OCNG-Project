@@ -1,19 +1,14 @@
 import math, sys, random
-import numpy as np
-import analysis
 
 class Point:
 
-	def __init__(self, lon, lat, station=False, ss = 0.0, bs = 0.0, so = 0.0, bo = 0.0):
+	def __init__(self, lon, lat, station=False, attributes={}):
 		self.x       = lon       #x-coordinate in the GRID
 		self.y       = lat       #y-coordinate in the GRID
 
 		self.station = station #true or false depending on if we already know information about this point.
 
-		self.attributes = {"surface salinity": ss,
-						   "bottom salinity" : bs,
-						   "surface oxygen"  : so,
-						   "bottom oxygen"   : bo}
+		self.attributes = attributes #dictionary of attributes
 
 	#returns True or False if this point is a station
 	def isStation(self): return self.station
@@ -39,13 +34,6 @@ class Point:
 
 	#calculates the residual between the attributes of this point and another.
 	def residual(self, point, attr): return (point.getAttr(attr) - self.getAttr(attr))
-
-	#resets the attributes of this point to 0, useful for doing more than one analysis.
-	def reset(self):
-		self.attributes = {"surface salinity": 0.0,
-						   "bottom salinity" : 0.0,
-						   "surface oxygen"  : 0.0,
-						   "bottom oxygen"   : 0.0}
 
 class Grid:
 
