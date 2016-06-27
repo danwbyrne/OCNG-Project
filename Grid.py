@@ -21,10 +21,10 @@ class Point:
 	#uses the haversine formula to calculate this
 	def distance(self, point):
 		rrr      = 6371. #mean distance of earths radius, in km
-		lat1     = math.radians(self.x)
-		lat2     = math.radians(point.x)
-		lat_dif  = math.radians(point.x - self.x)
-		lon_dif  = math.radians(point.y - self.y)
+		lat1     = math.radians(point.y)
+		lat2     = math.radians(self.y)
+		lat_dif  = math.radians(self.y - point.y)
+		lon_dif  = math.radians(self.x - point.x)
 
 		aaa      = (math.sin(lat_dif/2))**2 + math.cos(lat1)*math.cos(lat2) * (math.sin(lon_dif/2))**2
 		ccc      = 2 * math.atan2(math.sqrt(aaa), math.sqrt(1.-aaa))
