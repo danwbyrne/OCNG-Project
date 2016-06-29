@@ -2,16 +2,13 @@ import math, sys, random
 
 class Point:
 
-	def __init__(self, lon, lat, station=False, attributes={}):
+	def __init__(self, lon, lat, attributes={}):
 		self.x       = lon       #x-coordinate in the GRID
 		self.y       = lat       #y-coordinate in the GRID
 
-		self.station = station #true or false depending on if we already know information about this point.
+		self.weights = {}
 
 		self.attributes = attributes #dictionary of attributes
-
-	#returns True or False if this point is a station
-	def isStation(self): return self.station
 
 	#get and set commands for the attributes of this point
 	def setAttr(self, attr, value): self.attributes[attr] = value

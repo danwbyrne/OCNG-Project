@@ -63,16 +63,18 @@ def objectiveMap(bounds, x, y, values, station_locs=[], title='', cbar_label='',
 	m.pcolormesh(x, y, values, latlon=True, cmap=cmap)
 
 	#apply our color bar, cmap, to the figure
-	pyplot.colorbar(cmap=cmap, label=cbar_label, pad=.05)
+	pyplot.colorbar(cmap=cmap, label=cbar_label, pad=.05, orientation='horizontal')
 	
 	#place a marker at station locations if given.
 	if len(station_locs) == 2:
 		x_stat, y_stat = m(station_locs[0], station_locs[1])
 		m.scatter(x_stat,y_stat, 15 ,marker="x", color='k', latlon=True)
 
+
 	#draw the coastline and fill it in with a color.
 	m.drawcoastlines()
 	m.fillcontinents(color='#AD6B55')
+	m.drawrivers()
 
 	#draw the parallel and meridian lines.
 	meridians = np.arange(bounds[1], bounds[0]+1 ,1)

@@ -36,11 +36,11 @@ def BarnesMap(filedir, dn, attr, alpha, gamma, show=True, pdf_name=None):
 	dicts    = CSVtoPoints.multiRead(filedir)
 
 	#organizing the data from the .csv data and making stations from them. points is just initialized.
-	stations, lats, lons, dates = [], [], [], []
+	stations, lats, lons, dates, depths = [], [], [], [], []
 	for data in dicts:
 		lat, lon, value = float(data['Latitude']), float(data['Longitude']), float(data[attr])
 		date            = data['DateUTC'] + " " + data['TimeUTC']
-		lats.append(lat); lons.append(lon); dates.append(date)
+		lats.append(lat); lons.append(lon); dates.append(date);
 		stations.append(Point(lon, lat, attributes = {attr: value}))
 
 	station_locs = [lons, lats] #so we can see where the stations are on our map
@@ -61,8 +61,8 @@ def BarnesMap(filedir, dn, attr, alpha, gamma, show=True, pdf_name=None):
 	time_range = min_time + " to " + max_time
 	
 	#calculate boundary points, also applies some padding to get a nice int boundary.
-	max_lon,min_lon = int(max(lons)+1),int(min(lons)-1)
-	max_lat,min_lat = int(max(lats)+1),int(min(lats))+.5
+	max_lon,min_lon = int(max(lons)),int(min(lons)-1)
+	max_lat,min_lat = int(max(lats)+1),int(min(lats))
 	bounds          = [max_lon, min_lon, max_lat, min_lat]
 
 	#creates a mesh grid over the boundaries size dn apart.
@@ -80,59 +80,19 @@ def BarnesMap(filedir, dn, attr, alpha, gamma, show=True, pdf_name=None):
 			row.append(new_point)
 		points.append(row)
 
-	grid      = Grid(points, stations) #initialize the grid with points and stations.
-	values    = np.asarray(analysis.Barnes(grid, attr, alpha, gamma)) #run the analysis and convert the output to a numpy array.
+	values    = np.asarray(analysis.Barnes(points, stations, attr, alpha, gamma, dev_view=True)) #run the analysis and convert the output to a numpy array.
 
 	#map the data
-	Mapper.objectiveMap(bounds, x, y, values,
-						station_locs, title="Bottom Oxygen Content From " + time_range,
+	Mapper.objectiveMap(bounds, x, y, values, station_locs,
+						title="Bottom Oxygen Content From " + time_range,
 						cbar_label="Oxygen mg/L", show=show, pdf_name=pdf_name)
+
 
 #runs and saves multiple barnes analysis and saves them to a directory as pdfs
 def multiBarnes(filedir, dn, attr, alpha, gamma_range, pdf_dir):
 	for gamma in gamma_range:
 		pdf_name = pdf_dir + ("OxMgL Analysis Gamma-%s" % (gamma*.1))+".pdf"
 		BarnesMap(filedir, dn, attr, alpha, gamma*.1, show=False, pdf_name=pdf_name)
-	
-def interpMap(filedir, dn, attr, pdf_dir, method):
-	#reads in the all of the .csv files in a directory.
-	dicts    = CSVtoPoints.multiRead(filedir)
-
-	#organizing the data from the .csv data and making stations from them. points is just initialized.
-	stations, lats, lons, dates = [], [], [], []
-	for data in dicts:
-		lat, lon, value = float(data['Latitude']), float(data['Longitude']), float(data[attr])
-		date            = data['DateUTC'] + " " + data['TimeUTC']
-		lats.append(lat); lons.append(lon); dates.append(date)
-		stations.append(Point(lon, lat, attributes = {attr: value}))
-
-	station_locs = [lons, lats] #so we can see where the stations are on our map
-
-	#date conversion since NOAA decided to switch their format up halfway through
-	converted_dates = []
-	for date in dates:
-		try:
-			new_date = time.mktime(time.strptime(date, "%d-%b-%y %H:%M:%S"))
-		except ValueError:
-			new_date = time.mktime(time.strptime(date, "%d%b%Y %H:%M:%S"))
-		converted_dates.append(new_date)
-	dates = converted_dates
-
-	#calculate the time range the data was collected in
-	min_time   = time.strftime("%d-%b-%y %H:%M:%S",time.localtime(min(dates)))
-	max_time   = time.strftime("%d-%b-%y %H:%M:%S",time.localtime(max(dates)))
-	time_range = min_time + " to " + max_time
-	
-	#calculate boundary points, also applies some padding to get a nice int boundary.
-	max_lon,min_lon = int(max(lons)+1),int(min(lons)-1)
-	max_lat,min_lat = int(max(lats)+1),int(min(lats)-1)
-	bounds          = [max_lon, min_lon, max_lat, min_lat]
-
-	#creates a mesh grid over the boundaries size dn apart.
-	y,x = np.mgrid[slice(min_lat, max_lat+dn, dn),
-				   slice(min_lon, max_lon+dn, dn)]
-
-	values = np.asarray(analysis.Interpolation(x,y,stations,attr))
 
 if __name__ == "__main__":
 	filedir = "CSVs\\R2-0318\\"
