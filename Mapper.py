@@ -45,11 +45,11 @@ def multiPlot(data_list, titles, pdf_name):
 
 #used in tangent with the BarnesMap function in main, station_locs need only be specified if
 #you want a marker placed where the interpolated data is calculated from.
-def objectiveMap(bounds, x, y, values, station_locs=[], title='', cbar_label='', show=True, pdf_name=None):
-	gradient = ['red','yellow','green']
+def objectiveMap(bounds, x, y, values, station_locs=[], title='', cbar_label='', show=True, save_name=None):
+	gradient = ['purple','blue','green']
 	cmap     = mpl.colors.LinearSegmentedColormap.from_list('my_colormap', gradient, 256)
 
-	fig = pyplot.figure(figsize=(12,12))
+	fig = pyplot.figure(figsize=(8,8))
 	title = pyplot.title(title)
 	title.set(y = title.get_position()[1] + .05)
 	title.set(x = title.get_position()[0] - .01)
@@ -85,10 +85,8 @@ def objectiveMap(bounds, x, y, values, station_locs=[], title='', cbar_label='',
 	#this way we can see the ones we want but don't have to show them if we are just saving them to a page.
 	if show: pyplot.show(fig)
 
-	#multiPage pdf saving protocol.
-	if pdf_name:
-		pp = PdfPages(pdf_name)
-		pyplot.savefig(pp, format='pdf')
-		print "saved to:", pdf_name
+	#saving protocol.
+	if save_name:
+		pyplot.savefig(save_name, format='png')
+		print "saved to:", save_name
 		pyplot.clf()
-		pp.close()

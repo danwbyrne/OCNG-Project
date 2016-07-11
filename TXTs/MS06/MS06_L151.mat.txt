@@ -1,0 +1,271 @@
+* 28-May-2015
+********************************************************************
+**      Program Title: Mechanisms Controlling Hypoxia             **
+**    on the Louisiana Shelf: Integrated Causal Modeling          **
+**                                                                **
+**  Sponsored by: National Oceanic and Atmospheric Administration **
+**        Center for Sponsored Coastal Ocean Research             **
+**                    Coastal Ocean Program                       **
+**                NOAA/CSCOR/COP NA09N0S4780208                   **
+**                                                                **
+**    Conducted by: Dept. of Oceanography, Texas A&M University   **
+**                                                                **
+**  Archived by: National Centers for Environmental Information   **
+**                    NODC Project Code 0490                      **
+**                    Accension Number: 0088164                   **
+**                                                                **
+** For questions regarding these data, please contact:            **
+** Dr. S.F. DiMarco, Lead Principal Investigator                  **
+** Dr. Matthew K. Howard, Data Manager                            **
+** Department of Oceanography, Texas A&M University               **
+** College Station, TX 77843-3146                                 **
+** DiMarco: (979)862-4168 (voice), email: sdimarco@tamu.edu       **
+** Howard: (979)862-4169 (voice), email: mkhoward@tamu.edu        **
+********************************************************************
+* CTD PROFILE DATA
+* MCH CRUISE ID : MS06
+* PLATFORM : R/V MANTA
+* SEQUENCE NUMBER: 032
+* STATION NUMBER :  L151
+* CAST DATE-TIME (MM/DD/YYYY HH:MM UTC): 08-17-2012 22:20
+* CAST LATITUDE (N): 29.2275
+* CAST LONGITUDE (W): -89.8285
+* WATER DEPTH (M) : 12.00
+* DATA FILE NAME : MS06_L151.mat.txt
+* Processed using: SBE Data Processing V7.23.2
+********************************************************************
+* Sea-Bird SBE 25plus Data File:
+* FileName = Users/heatherzimmerle/Desktop/Hypoxia_CTD/MS06_CTD/9DATA_FINAL/MS06_L151.mat.txt/
+* Software Version Seasave V 7.21d
+* Temperature SN = 4446
+* Conductivity SN = 3368
+********************************************************************
+* name 0 : depSM: Depth [salt water, m]
+* name 1 : prdM: Pressure, Strain Gauge [db]
+* name 2 : tv290C: Temperature {ITS-90, deg C]
+* name 3 : potemp090C: Potential Temperature [ITS-90, deg C]
+* name 4 : sigma-E00: Density [sigma-theta, kg/m^3]
+* name 5 : sal00: Salinity, Practical [PSU]
+* name 6 : c0S/m: Conductivity, [S/m]
+* name 7 : sbeox0ML/L: Oxygen, SBE 43 [ml/l]
+* name 8 : sbeox0V: Oxygen raw, SBE 43 [V]
+* name 9 : flECO-AFL: Fluorescence, WET Labs ECO-AFL/FL [mg/m^3]
+* name 10 : v4: Voltage 4
+* name 11 : turbWETntu0: Turbidity, WET Labs ECO [NTU]
+* name 12 : v5: Voltage 5
+* name 13 : par: PAR/Irradiance, Biospherical/Licor
+* name 14 : v3: Voltage 3
+* name 15 : v0: Voltage 0
+* name 16 : flag: flag
+* span 0 = 0.50 , 10.00
+* span 1 = 0.50 , 10.07
+* span 2 = 29.13 , 30.73
+* span 3 = 29.13 , 30.73
+* span 4 = 17.91 , 21.46
+* span 5 = 30.23 , 34.25
+* span 6 = 5.19 , 5.63
+* span 7 = 0.23 , 4.72
+* span 8 = 0.89 , 3.80
+* span 9 = -0.06 , 2.71
+* span 10 = -99.99 , 0.28
+* span 11 = -99.99 , 2.99
+* span 12 = -99.99 , 0.67
+* span 13 = -99.99 , 22.05
+* span 14 = 0.68 , 2.45
+* span 15 = -99.99 , -99.99
+* span 16 = 0.00 , 0.00
+********************************************************************
+# <Sensors count="10" >
+#   <sensor Channel="1" >
+#     <!-- Frequency 0, Temperature -->
+#     <TemperatureSensor SensorID="55" >
+#       <SerialNumber>4446</SerialNumber>
+#       <CalibrationDate>17-Jan-08 </CalibrationDate>
+#       <UseG_J>1</UseG_J>
+#       <A>0.00000000e+000</A>
+#       <B>0.00000000e+000</B>
+#       <C>0.00000000e+000</C>
+#       <D>0.00000000e+000</D>
+#       <F0_Old>0.000</F0_Old>
+#       <G>4.33447362e-003</G>
+#       <H>6.32195987e-004</H>
+#       <I>1.97945689e-005</I>
+#       <J>1.58803747e-006</J>
+#       <F0>1000.000</F0>
+#       <Slope>1.00000000</Slope>
+#       <Offset>0.0000</Offset>
+#     </TemperatureSensor>
+#   </sensor>
+#   <sensor Channel="2" >
+#     <!-- Frequency 1, Conductivity -->
+#     <ConductivitySensor SensorID="3" >
+#       <SerialNumber>3368</SerialNumber>
+#       <CalibrationDate>08-Jan-08 </CalibrationDate>
+#       <UseG_J>1</UseG_J>
+#       <!-- Cell const and series R are applicable only for wide range sensors. -->
+#       <SeriesR>0.0000</SeriesR>
+#       <CellConst>2000.0000</CellConst>
+#       <ConductivityType>0</ConductivityType>
+#       <Coefficients equation="0" >
+#         <A>0.00000000e+000</A>
+#         <B>0.00000000e+000</B>
+#         <C>0.00000000e+000</C>
+#         <D>0.00000000e+000</D>
+#         <M>0.0</M>
+#         <CPcor>-9.57000000e-008</CPcor>
+#       </Coefficients>
+#       <Coefficients equation="1" >
+#         <G>-9.95016620e+000</G>
+#         <H>1.53247911e+000</H>
+#         <I>-1.65696215e-003</I>
+#         <J>2.15305916e-004</J>
+#         <CPcor>-9.57000000e-008</CPcor>
+#         <CTcor>3.2500e-006</CTcor>
+#         <!-- WBOTC not applicable unless ConductivityType = 1. -->
+#         <WBOTC>0.00000000e+000</WBOTC>
+#       </Coefficients>
+#       <Slope>1.00000000</Slope>
+#       <Offset>0.00000</Offset>
+#     </ConductivitySensor>
+#   </sensor>
+#   <sensor Channel="3" >
+#     <!-- Pressure voltage, Pressure, Strain Gauge -->
+#     <PressureSensor SensorID="49" >
+#       <SerialNumber>0617</SerialNumber>
+#       <CalibrationDate>11-Sep-07 </CalibrationDate>
+#       <A0>5.406554e+002</A0>
+#       <A1>-1.507230e-001</A1>
+#       <A2>4.618989e-008</A2>
+#       <Offset>0.00000</Offset>
+#     </PressureSensor>
+#   </sensor>
+#   <sensor Channel="4" >
+#     <!-- A/D voltage 0, Oxygen, SBE 43 -->
+#     <OxygenSensor SensorID="38" >
+#       <SerialNumber>1839</SerialNumber>
+#       <CalibrationDate>12-mar-11</CalibrationDate>
+#       <Use2007Equation>1</Use2007Equation>
+#       <CalibrationCoefficients equation="0" >
+#         <!-- Coefficients for Owens-Millard equation. -->
+#         <Boc>0.0000</Boc>
+#         <Soc>0.0000e+000</Soc>
+#         <offset>0.0000</offset>
+#         <Pcor>0.00e+000</Pcor>
+#         <Tcor>0.0000</Tcor>
+#         <Tau>0.0</Tau>
+#       </CalibrationCoefficients>
+#       <CalibrationCoefficients equation="1" >
+#         <!-- Coefficients for Sea-Bird equation - SBE calibration in 2007 and later. -->
+#         <Soc>3.6390e-001</Soc>
+#         <offset>-0.7347</offset>
+#         <A>-2.4762e-003</A>
+#         <B> 1.0978e-004</B>
+#         <C>-2.3139e-006</C>
+#         <D0> 2.5826e+000</D0>
+#         <D1> 1.92634e-004</D1>
+#         <D2>-4.64803e-002</D2>
+#         <E> 3.6000e-002</E>
+#         <Tau20> 1.5100</Tau20>
+#         <H1>-3.3000e-002</H1>
+#         <H2> 5.0000e+003</H2>
+#         <H3> 1.4500e+003</H3>
+#       </CalibrationCoefficients>
+#     </OxygenSensor>
+#   </sensor>
+#   <sensor Channel="5" >
+#     <!-- A/D voltage 1, Free -->
+#   </sensor>
+#   <sensor Channel="6" >
+#     <!-- A/D voltage 2, Free -->
+#   </sensor>
+#   <sensor Channel="7" >
+#     <!-- A/D voltage 3, PAR/Irradiance, Biospherical/Licor -->
+#     <PAR_BiosphericalLicorChelseaSensor SensorID="42" >
+#       <SerialNumber>70145</SerialNumber>
+#       <CalibrationDate>09/20/07</CalibrationDate>
+#       <M>1.00000000</M>
+#       <B>0.00000000</B>
+#       <CalibrationConstant>12820513000.00000000</CalibrationConstant>
+#       <Multiplier>1.00000000</Multiplier>
+#       <Offset>0.00000000</Offset>
+#     </PAR_BiosphericalLicorChelseaSensor>
+#   </sensor>
+#   <sensor Channel="8" >
+#     <!-- A/D voltage 4, Fluorometer, WET Labs ECO-AFL/FL -->
+#     <FluoroWetlabECO_AFL_FL_Sensor SensorID="20" >
+#       <SerialNumber>2276</SerialNumber>
+#       <CalibrationDate>May 25, 2011</CalibrationDate>
+#       <ScaleFactor>1.00000000e+001</ScaleFactor>
+#       <!-- Dark output -->
+#       <Vblank>0.0059</Vblank>
+#     </FluoroWetlabECO_AFL_FL_Sensor>
+#   </sensor>
+#   <sensor Channel="9" >
+#     <!-- A/D voltage 5, Turbidity Meter, WET Labs, ECO-NTU -->
+#     <TurbidityMeter SensorID="67" >
+#       <SerialNumber>2276</SerialNumber>
+#       <CalibrationDate>May 25, 2011</CalibrationDate>
+#       <ScaleFactor>5.000000</ScaleFactor>
+#       <!-- Dark output -->
+#       <DarkVoltage>0.074000</DarkVoltage>
+#     </TurbidityMeter>
+#   </sensor>
+#   <sensor Channel="10" >
+#     <!-- A/D voltage 6, Free -->
+#   </sensor>
+# </Sensors>
+# datcnv_date = May 15 2015 10:53:27, 7.23.2 [datcnv_vars = 11]
+# datcnv_in = C:\Users\Fielduser8\Desktop\Hypoxia_CTD\MS06_CTD\0HEX\MS06L151.hex C:\Users\Fielduser8\Desktop\Hypoxia_CTD\MS06_CTD\0HEX\MS06L151.XMLCON
+# datcnv_skipover = 0
+# datcnv_ox_hysteresis_correction = yes
+# datcnv_ox_tau_correction = yes
+# filter_date = May 15 2015 10:56:12, 7.23.2
+# filter_in = C:\Users\Fielduser8\Desktop\Hypoxia_CTD\MS06_CTD\1CNV\MS06L151.cnv
+# filter_low_pass_tc_A = 0.500
+# filter_low_pass_tc_B = 0.100
+# filter_low_pass_A_vars = prSM
+# filter_low_pass_B_vars = t090C c0S/m
+# alignctd_date = May 15 2015 10:59:17, 7.23.2
+# alignctd_in = C:\Users\Fielduser8\Desktop\Hypoxia_CTD\MS06_CTD\2FIL\MS06L151.cnv
+# alignctd_adv = c0S/m 0.100, sbeox0ML/L 5.000, sbeox0V 5.000                                                                                                                                                                        
+# celltm_date = May 15 2015 11:00:23, 7.23.2
+# celltm_in = C:\Users\Fielduser8\Desktop\Hypoxia_CTD\MS06_CTD\3ALI\MS06L151.cnv
+# celltm_alpha = 0.0400, 0.0000
+# celltm_tau = 8.0000, 0.0000
+# celltm_temp_sensor_use_for_cond = primary, 
+# loopedit_date = May 15 2015 11:01:33, 7.23.2
+# loopedit_in = C:\Users\Fielduser8\Desktop\Hypoxia_CTD\MS06_CTD\4CEL\MS06L151.cnv
+# loopedit_minVelocity = 0.010                                                                                            
+# loopedit_surfaceSoak: do not remove                                                                                     
+# loopedit_excl_bad_scans = yes
+# Derive_date = May 15 2015 11:02:55, 7.23.2 [derive_vars = 4]
+# Derive_in = C:\Users\Fielduser8\Desktop\Hypoxia_CTD\MS06_CTD\5LOOP\MS06L151.cnv C:\Users\Fielduser8\Desktop\Hypoxia_CTD\MS06_CTD\0429_JUNE2011.con
+# binavg_date = May 15 2015 11:03:57, 7.23.2
+# binavg_in = C:\Users\Fielduser8\Desktop\Hypoxia_CTD\MS06_CTD\6DEV\MS06L151.cnv
+# binavg_bintype = meters
+# binavg_binsize = 0.5
+# binavg_excl_bad_scans = yes
+# binavg_skipover = 0
+# binavg_surface_bin = yes, min = 0.000, max = 0.000, value = 0.000
+# file_type = ascii
+*END*
+  0.50   0.50  30.62  30.62  18.07  30.40   5.21   4.72   3.80 -99.99 -99.99 -99.99 -99.99  22.05   2.45 -99.99   0.00 
+  1.00   1.01  30.66  30.66  18.03  30.36   5.21   3.68   3.17 -99.99 -99.99 -99.99 -99.99  19.06   2.38 -99.99   0.00 
+  1.50   1.51  30.67  30.67  17.99  30.32   5.20   3.63   3.11 -99.99 -99.99 -99.99 -99.99  12.56   2.20 -99.99   0.00 
+  2.00   2.01  30.69  30.69  17.98  30.31   5.20   3.61   3.08 -99.99 -99.99 -99.99 -99.99   8.62   2.04 -99.99   0.00 
+  2.50   2.52  30.72  30.72  17.91  30.23   5.19   3.43   2.99 -99.99 -99.99 -99.99 -99.99   5.88   1.87 -99.99   0.00 
+  3.00   3.02  30.73  30.73  18.02  30.38   5.21   3.28   2.90 -99.99 -99.99 -99.99 -99.99   4.03   1.71 -99.99   0.00 
+  3.50   3.52  30.69  30.69  18.03  30.37   5.21   3.18   2.83 -99.99 -99.99 -99.99 -99.99   3.25   1.62 -99.99   0.00 
+  4.00   4.03  30.62  30.62  18.00  30.30   5.19   3.24   2.82 -99.99 -99.99 -99.99 -99.99   2.64   1.53 -99.99   0.00 
+  4.50   4.53  30.54  30.54  18.14  30.46   5.21   3.22   2.81 -99.99 -99.99 -99.99 -99.99   2.14   1.44 -99.99   0.00 
+  5.00   5.03  30.42  30.42  18.56  30.96   5.27   3.64   2.98 -99.99 -99.99 -99.99 -99.99   1.69   1.34 -99.99   0.00 
+  5.50   5.54  30.30  30.30  18.82  31.25   5.30   3.38   2.92 -99.99 -99.99 -99.99 -99.99   1.36   1.24 -99.99   0.00 
+  6.00   6.04  29.98  29.98  20.35  33.16   5.56   3.15   2.80   2.71   0.28   1.98   0.47   1.25   1.20 -99.99   0.00 
+  6.50   6.54  29.78  29.77  20.69  33.51   5.59   2.57   2.46   1.90   0.20   2.00   0.47   1.13   1.16 -99.99   0.00 
+  7.00   7.05  29.73  29.73  20.74  33.56   5.60   2.30   2.28   1.64   0.17   1.99   0.47   0.98   1.10 -99.99   0.00 
+  7.50   7.55  29.70  29.70  20.78  33.60   5.60   1.66   1.92   1.53   0.16   2.02   0.48   0.87   1.05 -99.99   0.00 
+  8.00   8.05  29.65  29.65  20.84  33.66   5.60   1.33   1.68   1.55   0.16   2.38   0.55   0.79   1.01 -99.99   0.00 
+  8.50   8.56  29.53  29.53  20.99  33.80   5.61   0.76   1.35   1.63   0.17   2.99   0.67   0.65   0.92 -99.99   0.00 
+  9.00   9.06  29.35  29.34  21.23  34.04   5.63   0.23   0.98   1.50   0.16   2.64   0.60   0.50   0.81 -99.99   0.00 
+  9.50   9.56  29.17  29.17  21.42  34.22   5.63   0.25   0.91   1.49   0.15   2.31   0.54   0.44   0.75 -99.99   0.00 
+ 10.00  10.07  29.13  29.13  21.46  34.25   5.63   0.25   0.89   1.81   0.19   2.51   0.58   0.37   0.68 -99.99   0.00 

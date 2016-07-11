@@ -19,6 +19,16 @@ def findNClosest(point, stations, N, max_range):
 
 	return return_list
 
+#calculates the mean value of attribute in a list of points, or in a tuple style like returned by FindNClosest.
+def mean(points, attr):
+	sss = 0.
+	try: 
+		for point in points: sss += point.getAttr(attr)
+	except: 
+		for point in points: sss += point[0].getAttr(attr)
+
+	return sss / len(points)
+
 #runs a Barnes Analysis on a given grid; alpha controls radius of influence
 #that a station has, gamma controls smoothness of the interpolation.
 #attr specifies which attribute of the points we are analyzing.
@@ -84,3 +94,4 @@ def Barnes(points, stations, attr, alpha, gamma, N=20, dev_view=False):
 		print "In total the analysis took:",(end_time - start_time)
 
 	return g_final
+
