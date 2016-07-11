@@ -136,7 +136,7 @@ def BarnesMapTXT(filedir, dn, attr, depth, alpha, gamma, show=True, save_name=No
 			row.append(new_point)
 		points.append(row)
 
-	values    = np.asarray(analysis.Barnes(points, stations, attr, alpha, gamma, dev_view=True)) #run the analysis and convert the output to a numpy array.
+	values    = np.asarray(analysis.Barnes(points, stations, attr, alpha, gamma)) #run the analysis and convert the output to a numpy array.
 
 	print "Mean of Stations:", analysis.mean(stations, attr)
 	print "Mean of Interped:", np.mean(values)
@@ -149,11 +149,11 @@ def BarnesMapTXT(filedir, dn, attr, depth, alpha, gamma, show=True, save_name=No
 if __name__ == "__main__":
 
 	filedir = "TXTs\\MS04\\"
-	BarnesMapTXT(filedir, .01, "Salinity", 2.0, 15, .6 ,show=False,
+	BarnesMapTXT(filedir, .01, "Salinity", 2.0, 30, .6 ,show=False,
 				save_name = "Plots\\MS04 Surface Salinity Interpolation.png",
 				title    = "Surface Salinity From ", cbar_label = "PSS78")
 
-	BarnesMapTXT(filedir, .01, "Salinity", 2.0, 15, .6 ,show=False,
+	BarnesMapTXT(filedir, .01, "Salinity", 2.0, 30, .6 ,show=False,
 				save_name = "Plots\\MS04 Bottom Salinity Interpolation.png",
 				title    = "Bottom Salinity From ", cbar_label = "PSS78", bottom_only = True)
 
