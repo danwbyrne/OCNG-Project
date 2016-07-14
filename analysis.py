@@ -1,5 +1,6 @@
 import numpy as np
 import time, operator, math
+from numpy.linalg import inv
 
 #returns a list of AT MOST N stations within the range of max_range, if
 #it cannot find 20 points it returns as many as it can.
@@ -28,6 +29,9 @@ def mean(points, attr):
 		for point in points: sss += point[0].getAttr(attr)
 
 	return sss / len(points)
+
+def exponential(distance, alpha):
+	return math.exp(-(distance**2)/alpha)
 
 #runs a Barnes Analysis on a given grid; alpha controls radius of influence
 #that a station has, gamma controls smoothness of the interpolation.
@@ -94,4 +98,43 @@ def Barnes(points, stations, attr, alpha, gamma, N=20, dev_view=False):
 		print "In total the analysis took:",(end_time - start_time)
 
 	return g_final
+
+
+def Kriging(points, stations, attr, weight_func, alpha, N=20):
+	print "Starting Kriging Interpolation"
+	shape = len(points), len(points[0])
+	alpha = 5.052*(((2*alpha)/math.pi)**2)
+	runs  = 0.
+
+	final = np.zeros(shape, dtype = np.float)
+
+	#go through all the points
+	for j in range(shape[0]):
+		for i in range(shape[1]):
+			#at each point we'll have N estimators, so an NxN covariance matrix and
+			#a 1xN weight matrix for obtaining or final weight matrix
+			estimators = findNClosest(points[j][i], stations, N, alpha)
+			mmm        = mean(estimators, attr)
+			cov_mat    = np.zeros((len(estimators),len(estimators)), dtype = np.float)
+			weights    = np.zeros(len(estimators), dtype = np.float)
+			values     = np.zeros(len(estimators), dtype = np.float)
+
+			#set up our covariance matrix and our weight matrix at the same time
+			for ii in range(len(estimators)):
+				weights[ii] = weight_func(estimators[ii][1], alpha)
+				values[ii]  = estimators[ii][0].getAttr(attr)
+				for jj in range(len(estimators)):
+					cov_mat[jj][ii] = weight_func(estimators[ii][0].distance(estimators[jj][0]), alpha)
+
+			cov_inv = inv(cov_mat)
+			weights = np.dot(cov_inv, weights)
+
+			final[j][i] = mmm + np.dot(weights, values)
+
+			runs += 1.
+			print str(runs/(shape[0]*shape[1])*100.),"percent complete"
+
+
+
+	return final
 
