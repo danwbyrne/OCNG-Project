@@ -115,3 +115,14 @@ def multiReadTXT(filedir, bottom_only=False):
 			return_dicts.extend(readTXT(filedir + fff, bottom_only))
 
 	return return_dicts
+
+def writeCSV(lon, lat, values, save_name):
+	with open(save_name, 'w') as csvfile:
+		writer = csv.writer(csvfile, delimiter=',',
+							quotechar='|', quoting=csv.QUOTE_MINIMAL)
+
+		writer.writerow(['longitude'] + ['latitude'] + ['Surface Salinity (PSS78)'])
+		for j in range(len(lat)-1):
+			for i in range(len(lat[0])-1):
+				writer.writerow([str(lon[j][i])] + [str(lat[j][i])] + [str(values[j][i])])
+

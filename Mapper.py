@@ -46,7 +46,7 @@ def multiPlot(data_list, titles, pdf_name):
 #used in tangent with the BarnesMap function in main, station_locs need only be specified if
 #you want a marker placed where the interpolated data is calculated from.
 def objectiveMap(bounds, x, y, values, station_locs=[], title='', cbar_label='', show=True, save_name=None):
-	gradient = ['purple','blue','green']
+	gradient = ['red','yellow','green']
 	cmap     = mpl.colors.LinearSegmentedColormap.from_list('my_colormap', gradient, 256)
 
 	fig = pyplot.figure(figsize=(8,8))
@@ -57,7 +57,7 @@ def objectiveMap(bounds, x, y, values, station_locs=[], title='', cbar_label='',
 	#create the basemap using max-min lat/lon data from input data.
 	m = Basemap(llcrnrlon=bounds[1], llcrnrlat=bounds[3],
 				urcrnrlon=bounds[0], urcrnrlat=bounds[2],
-				resolution = 'h')
+				resolution = 'f')
 	
 	#apply the colormesh to the figure
 	m.pcolormesh(x, y, values, latlon=True, cmap=cmap)

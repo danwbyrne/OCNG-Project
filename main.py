@@ -58,6 +58,9 @@ def BarnesMap(filedir, dn, attr, alpha, gamma, show=True, save_name=None):
 		points.append(row)
 
 	values    = np.asarray(analysis.Barnes(points, stations, attr, alpha, gamma, dev_view=True)) #run the analysis and convert the output to a numpy array.
+	print "Mean of stations: ", analysis.mean(stations,attr)
+	print "Mean of interped: ", np.mean(values)
+	print "Residual: ", analysis.mean(stations,attr) - np.mean(values)
 
 	#map the data
 	Mapper.objectiveMap(bounds, x, y, values, station_locs,
@@ -142,9 +145,11 @@ def BarnesMapTXT(filedir, dn, attr, depth, alpha, gamma, show=True, save_name=No
 	print "Mean of Interped:", np.mean(values)
 	print "Residual:", analysis.mean(stations, attr)-np.mean(values)
 	#map the data
-	Mapper.objectiveMap(bounds, x, y, values, station_locs,
-						title=title + time_range,
-						cbar_label=cbar_label, show=show, save_name=save_name)
+	#Mapper.objectiveMap(bounds, x, y, values, station_locs,
+	#					title=title + time_range,
+	#					cbar_label=cbar_label, show=show, save_name=save_name)
+
+	Parser.writeCSV(x, y, values, "csvtest.csv")
 
 if __name__ == "__main__":
 
@@ -153,26 +158,26 @@ if __name__ == "__main__":
 				save_name = "Plots\\MS04 Surface Salinity Interpolation.png",
 				title    = "Surface Salinity From ", cbar_label = "PSS78")
 
-	BarnesMapTXT(filedir, .01, "Salinity", 2.0, 15, .6 ,show=False,
-				save_name = "Plots\\MS04 Bottom Salinity Interpolation.png",
-				title    = "Bottom Salinity From ", cbar_label = "PSS78", bottom_only = True)
+	#BarnesMapTXT(filedir, .01, "Salinity", 2.0, 15, .6 ,show=False,
+	#			save_name = "Plots\\MS04 Bottom Salinity Interpolation.png",
+	#			title    = "Bottom Salinity From ", cbar_label = "PSS78", bottom_only = True)
 
-	BarnesMapTXT(filedir, .01, "Oxygen", 0.0, 15, .6 ,show=False,
-				save_name = "Plots\\MS04 Bottom Oxygen Content Interpolation.png",
-				title    = "Bottom Oxygen Content From ", cbar_label = "mL/L", bottom_only = True)
+	#BarnesMapTXT(filedir, .01, "Oxygen", 0.0, 15, .6 ,show=False,
+	#			save_name = "Plots\\MS04 Bottom Oxygen Content Interpolation.png",
+	#			title    = "Bottom Oxygen Content From ", cbar_label = "mL/L", bottom_only = True)
 
-	filedir = "TXTs\\MS06\\"
-	BarnesMapTXT(filedir, .01, "Salinity", 2.0, 15, .6 ,show=False,
-				save_name = "Plots\\MS06 Surface Salinity Interpolation.png",
-				title    = "Surface Salinity From ", cbar_label = "PSS78")
+	#filedir = "TXTs\\MS06\\"
+	#BarnesMapTXT(filedir, .01, "Salinity", 2.0, 15, .6 ,show=False,
+	#			save_name = "Plots\\MS06 Surface Salinity Interpolation.png",
+	#			title    = "Surface Salinity From ", cbar_label = "PSS78")
 
-	BarnesMapTXT(filedir, .01, "Salinity", 2.0, 15, .6 ,show=False,
-				save_name = "Plots\\MS06 Bottom Salinity Interpolation.png",
-				title    = "Bottom Salinity From ", cbar_label = "PSS78", bottom_only = True)
+	#BarnesMapTXT(filedir, .01, "Salinity", 2.0, 15, .6 ,show=False,
+	#			save_name = "Plots\\MS06 Bottom Salinity Interpolation.png",
+	#			title    = "Bottom Salinity From ", cbar_label = "PSS78", bottom_only = True)
 
-	BarnesMapTXT(filedir, .01, "Oxygen", 0.0, 15, .6 ,show=False,
-				save_name = "Plots\\MS06 Bottom Oxygen Content Interpolation.png",
-				title    = "Bottom Oxygen Content From ", cbar_label = "mL/L", bottom_only = True)	
+	#BarnesMapTXT(filedir, .01, "Oxygen", 0.0, 15, .6 ,show=False,
+	#			save_name = "Plots\\MS06 Bottom Oxygen Content Interpolation.png",
+	#			title    = "Bottom Oxygen Content From ", cbar_label = "mL/L", bottom_only = True) 	
 
-	filedir = "CSVs\\R2-0318\\"
-	BarnesMap(filedir, .005, "OxMgL", 20, .6, show = False, save_name = "Plots\\NOAA Bottom Oxygen Content Interpolation.png")
+	#filedir = "CSVs\\R2-0318\\"
+	#BarnesMap(filedir, .005, "OxMgL", 20, .6, show = False, save_name = "Plots\\NOAA Bottom Oxygen Content Interpolation.png")
