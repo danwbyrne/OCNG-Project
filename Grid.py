@@ -2,17 +2,17 @@ import math, sys, random
 
 class Point:
 
-	def __init__(self, lon, lat, attributes={}):
+	def __init__(self, lon, lat, value):
 		self.x       = lon       #x-coordinate in the GRID
 		self.y       = lat       #y-coordinate in the GRID
 
 		self.weights = {}
 
-		self.attributes = attributes #dictionary of attributes
+		self.value = value #dictionary of attributes
 
 	#get and set commands for the attributes of this point
-	def setAttr(self, attr, value): self.attributes[attr] = value
-	def getAttr(self, attr): return self.attributes[attr]
+	def setAttr(self, value): self.value = value
+	def getAttr(self): return self.value
 
 	#calculates the distance between this point and another
 	#uses the haversine formula to calculate this

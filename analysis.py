@@ -1,6 +1,7 @@
 import numpy as np
 import time, operator, math
 from numpy.linalg import inv
+from pylab import *
 
 #returns a list of AT MOST N stations within the range of max_range, if
 #it cannot find 20 points it returns as many as it can.
@@ -99,42 +100,56 @@ def Barnes(points, stations, attr, alpha, gamma, N=20, dev_view=False):
 
 	return g_final
 
+def SV(stations, bw):
+	dists  = np.zeros((len(stations),len(stations)), dtype = np.float)
+	nnn    = len(stations)
+	values = np.asarray([stations[i].value for i in range(nnn)])
+	for j in range(nnn):
+		for i in range(nnn):
+			dists[j][i] = stations[j].distance(stations[i])
 
-def Kriging(points, stations, attr, weight_func, alpha, N=20):
-	print "Starting Kriging Interpolation"
-	shape = len(points), len(points[0])
-	alpha = 5.052*(((2*alpha)/math.pi)**2)
-	runs  = 0.
+	hs = range(0,700,bw)
 
-	final = np.zeros(shape, dtype = np.float)
+	xs, SV = [], []
+	for h in hs:
+		SVh = []
+		for j in range(nnn):
+			for i in range(j+1, nnn):
+				if (h-bw <= dists[j][i] <= h+bw):
+					diff = (stations[j].value - stations[i].value)**2
+					SVh.append(diff)
+		if len(SVh) != 0:
+			SV.append([sum(SVh)/(len(SVh)*2.0)])
+			xs.append(h)
 
-	#go through all the points
-	for j in range(shape[0]):
-		for i in range(shape[1]):
-			#at each point we'll have N estimators, so an NxN covariance matrix and
-			#a 1xN weight matrix for obtaining or final weight matrix
-			estimators = findNClosest(points[j][i], stations, N, alpha)
-			mmm        = mean(estimators, attr)
-			cov_mat    = np.zeros((len(estimators),len(estimators)), dtype = np.float)
-			weights    = np.zeros(len(estimators), dtype = np.float)
-			values     = np.zeros(len(estimators), dtype = np.float)
+	return xs, SV, np.var(values)
 
-			#set up our covariance matrix and our weight matrix at the same time
-			for ii in range(len(estimators)):
-				weights[ii] = weight_func(estimators[ii][1], alpha)
-				values[ii]  = estimators[ii][0].getAttr(attr)
-				for jj in range(len(estimators)):
-					cov_mat[jj][ii] = weight_func(estimators[ii][0].distance(estimators[jj][0]), alpha)
+def spherical(h, a, c0):
+	if type(h) != list:
+		if h <= a:
+			return c0*(1.5*h/a - .5*(h/a)**3.)
+		else:
+			return c0
 
-			cov_inv = inv(cov_mat)
-			weights = np.dot(cov_inv, weights)
+	else:
+		a = np.ones(len(h))*a
+		c0 = np.ones(len(h))*c0
+		return map(spherical, h, a, c0)
 
-			final[j][i] = mmm + np.dot(weights, values)
+def opt(model, x, y, c0, paramRange=None, meshSize=1000):
+	if paramRange == None:
+		paramRange = [x[1], x[-1]]
+	mse = np.zeros( meshSize )
+	a = np.linspace( paramRange[0], paramRange[1], meshSize )
+	for i in range( meshSize ):
+		mse[i] = np.mean( ( np.asarray(y) - np.asarray(model( x, a[i], c0 )) )**2.0 )
+	return a[ mse.argmin() ]
 
-			runs += 1.
-			print str(runs/(shape[0]*shape[1])*100.),"percent complete"
+def cvModel(stations, model, bw):
+	sv       = SV(stations, bw)
+	sv,hs,c0 = sv[1], sv[0], sv[2]
 
-
-
-	return final
+	param = opt(model, hs, sv, c0)
+	covfct = lambda h, a=param: c0 - model(h, a, c0)
+	return covfct
 

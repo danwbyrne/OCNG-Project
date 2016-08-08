@@ -2,7 +2,8 @@ from Grid import *
 import Parser, analysis, Mapper
 import numpy as np
 import time
-from matplotlib.backends.backend_pdf import PdfPages
+from scipy.interpolate import griddata
+from matplotlib import pyplot
 
 #function for plotting CSV data from filedir to a generated map with interpolated data values.
 #dn controls the distance between generated grid points, set it lower for more resolution
@@ -146,7 +147,7 @@ def BarnesMapTXT(filedir, dn, attr, depth, alpha, gamma, show=True, save_name=No
 						title=title + time_range,
 						cbar_label=cbar_label, show=show, save_name=save_name)
 
-if __name__ == "__main__":
+def main():
 
 	filedir = "TXTs\\MS04\\"
 	BarnesMapTXT(filedir, .01, "Salinity", 2.0, 30, .6 ,show=False,
@@ -176,3 +177,31 @@ if __name__ == "__main__":
 
 	filedir = "CSVs\\R2-0318\\"
 	BarnesMap(filedir, .005, "OxMgL", 20, .6, show = False, save_name = "Plots\\NOAA Bottom Oxygen Content Interpolation.png")
+
+if __name__ == "__main__":
+
+	filedir = "CSVs\\R2-0318\\"
+	#reads in the all of the .csv files in a directory.
+	dicts    = Parser.multiReadCSV(filedir)
+	attr     = "OxMgL"
+
+	#organizing the data from the .csv data and making stations from them. points is just initialized.
+	stations, lats, lons = [], [], []
+	for data in dicts:
+		lat, lon, value = float(data['Latitude']), float(data['Longitude']), float(data[attr])
+		lats.append(lat); lons.append(lon)
+		stations.append(Point(lon, lat, value = value))
+
+	#calculate boundary points, also applies some padding to get a nice int boundary.
+	max_lon,min_lon = int(max(lons)),int(min(lons)-1)
+	max_lat,min_lat = int(max(lats)+1),int(min(lats))
+	bounds          = [max_lon, min_lon, max_lat, min_lat]
+
+	#Mapper.test_plot(bounds, stations, attr)
+
+	fig = pyplot.figure(figsize=(8,8))
+	sv = analysis.SV(stations, 10)
+	sp = analysis.cvModel(stations, analysis.spherical,10)
+	pyplot.plot(sv[0], sv[1], '.')
+	pyplot.plot(sv[0], sp( sv[0]))
+	pyplot.show(fig)
