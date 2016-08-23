@@ -2,7 +2,8 @@ from Grid import *
 import Parser, analysis, Mapper
 import numpy as np
 import time
-from matplotlib.backends.backend_pdf import PdfPages
+from scipy.interpolate import griddata
+from matplotlib import pyplot
 
 #function for plotting CSV data from filedir to a generated map with interpolated data values.
 #dn controls the distance between generated grid points, set it lower for more resolution
@@ -58,9 +59,6 @@ def BarnesMap(filedir, dn, attr, alpha, gamma, show=True, save_name=None):
 		points.append(row)
 
 	values    = np.asarray(analysis.Barnes(points, stations, attr, alpha, gamma, dev_view=True)) #run the analysis and convert the output to a numpy array.
-	print "Mean of stations: ", analysis.mean(stations,attr)
-	print "Mean of interped: ", np.mean(values)
-	print "Residual: ", analysis.mean(stations,attr) - np.mean(values)
 
 	#map the data
 	Mapper.objectiveMap(bounds, x, y, values, station_locs,
@@ -139,45 +137,96 @@ def BarnesMapTXT(filedir, dn, attr, depth, alpha, gamma, show=True, save_name=No
 			row.append(new_point)
 		points.append(row)
 
-	values    = np.asarray(analysis.Barnes(points, stations, attr, alpha, gamma, dev_view=True)) #run the analysis and convert the output to a numpy array.
+	values    = np.asarray(analysis.Barnes(points, stations, attr, alpha, gamma)) #run the analysis and convert the output to a numpy array.
 
-	print "Mean of Stations:", analysis.mean(stations, attr)
+	print "Mean of Stations:", analysis.mean(stations)
 	print "Mean of Interped:", np.mean(values)
-	print "Residual:", analysis.mean(stations, attr)-np.mean(values)
+	print "Residual:", analysis.mean(stations)-np.mean(values)
 	#map the data
-	#Mapper.objectiveMap(bounds, x, y, values, station_locs,
-	#					title=title + time_range,
-	#					cbar_label=cbar_label, show=show, save_name=save_name)
+	Mapper.objectiveMap(bounds, x, y, values, station_locs,
+						title=title + time_range,
+						cbar_label=cbar_label, show=show, save_name=save_name)
 
-	Parser.writeCSV(x, y, values, "csvtest.csv")
-
-if __name__ == "__main__":
+def main():
 
 	filedir = "TXTs\\MS04\\"
-	BarnesMapTXT(filedir, .01, "Salinity", 2.0, 15, .6 ,show=False,
+	BarnesMapTXT(filedir, .01, "Salinity", 2.0, 30, .6 ,show=False,
 				save_name = "Plots\\MS04 Surface Salinity Interpolation.png",
 				title    = "Surface Salinity From ", cbar_label = "PSS78")
 
-	#BarnesMapTXT(filedir, .01, "Salinity", 2.0, 15, .6 ,show=False,
-	#			save_name = "Plots\\MS04 Bottom Salinity Interpolation.png",
-	#			title    = "Bottom Salinity From ", cbar_label = "PSS78", bottom_only = True)
+	BarnesMapTXT(filedir, .01, "Salinity", 2.0, 30, .6 ,show=False,
+				save_name = "Plots\\MS04 Bottom Salinity Interpolation.png",
+				title    = "Bottom Salinity From ", cbar_label = "PSS78", bottom_only = True)
 
-	#BarnesMapTXT(filedir, .01, "Oxygen", 0.0, 15, .6 ,show=False,
-	#			save_name = "Plots\\MS04 Bottom Oxygen Content Interpolation.png",
-	#			title    = "Bottom Oxygen Content From ", cbar_label = "mL/L", bottom_only = True)
+	BarnesMapTXT(filedir, .01, "Oxygen", 0.0, 15, .6 ,show=False,
+				save_name = "Plots\\MS04 Bottom Oxygen Content Interpolation.png",
+				title    = "Bottom Oxygen Content From ", cbar_label = "mL/L", bottom_only = True)
 
-	#filedir = "TXTs\\MS06\\"
-	#BarnesMapTXT(filedir, .01, "Salinity", 2.0, 15, .6 ,show=False,
-	#			save_name = "Plots\\MS06 Surface Salinity Interpolation.png",
-	#			title    = "Surface Salinity From ", cbar_label = "PSS78")
+	filedir = "TXTs\\MS06\\"
+	BarnesMapTXT(filedir, .01, "Salinity", 2.0, 15, .6 ,show=False,
+				save_name = "Plots\\MS06 Surface Salinity Interpolation.png",
+				title    = "Surface Salinity From ", cbar_label = "PSS78")
 
-	#BarnesMapTXT(filedir, .01, "Salinity", 2.0, 15, .6 ,show=False,
-	#			save_name = "Plots\\MS06 Bottom Salinity Interpolation.png",
-	#			title    = "Bottom Salinity From ", cbar_label = "PSS78", bottom_only = True)
+	BarnesMapTXT(filedir, .01, "Salinity", 2.0, 15, .6 ,show=False,
+				save_name = "Plots\\MS06 Bottom Salinity Interpolation.png",
+				title    = "Bottom Salinity From ", cbar_label = "PSS78", bottom_only = True)
 
-	#BarnesMapTXT(filedir, .01, "Oxygen", 0.0, 15, .6 ,show=False,
-	#			save_name = "Plots\\MS06 Bottom Oxygen Content Interpolation.png",
-	#			title    = "Bottom Oxygen Content From ", cbar_label = "mL/L", bottom_only = True) 	
+	BarnesMapTXT(filedir, .01, "Oxygen", 0.0, 15, .6 ,show=False,
+				save_name = "Plots\\MS06 Bottom Oxygen Content Interpolation.png",
+				title    = "Bottom Oxygen Content From ", cbar_label = "mL/L", bottom_only = True)	
 
-	#filedir = "CSVs\\R2-0318\\"
-	#BarnesMap(filedir, .005, "OxMgL", 20, .6, show = False, save_name = "Plots\\NOAA Bottom Oxygen Content Interpolation.png")
+	filedir = "CSVs\\R2-0318\\"
+	BarnesMap(filedir, .005, "OxMgL", 20, .6, show = False, save_name = "Plots\\NOAA Bottom Oxygen Content Interpolation.png")
+
+
+def testing():
+
+	dn = .05
+
+	filedir = "CSVs\\R2-0318\\"
+	#reads in the all of the .csv files in a directory.
+	dicts    = Parser.multiReadCSV(filedir)
+	attr     = "OxMgL"
+
+	#organizing the data from the .csv data and making stations from them. points is just initialized.
+	stations, lats, lons = [], [], []
+	for data in dicts:
+		lat, lon, value = float(data['Latitude']), float(data['Longitude']), float(data[attr])
+		lats.append(lat); lons.append(lon)
+		stations.append(Point(lon, lat, value = value))
+
+	station_locs = [lons, lats] #so we can see where the stations are on our map
+
+	#calculate boundary points, also applies some padding to get a nice int boundary.
+	max_lon,min_lon = int(max(lons)),int(min(lons)-1)
+	max_lat,min_lat = int(max(lats)+1),int(min(lats))
+	bounds          = [max_lon, min_lon, max_lat, min_lat]
+
+	#creates a mesh grid over the boundaries size dn apart.
+	y,x = np.mgrid[slice(min_lat, max_lat+dn, dn),
+				   slice(min_lon, max_lon+dn, dn)]
+
+	#create a grid of points from the created mesh for analysis. 	
+	points = []
+	for j in range(len(y)-1):
+		row = []
+		for i in range(len(y[0])-1):
+			x_mid = (x[j][i] + x[j][i+1])/2.
+			y_mid = (y[j][i] + y[j+1][i])/2.
+			new_point = Point(x_mid, y_mid, value = 0.0)
+			row.append(new_point)
+		points.append(row)
+
+
+	values = np.asarray(analysis.kriging(points, stations, analysis.spherical))
+	print "Mean of Stations:", analysis.mean(stations)
+	print "Mean of Interped:", np.mean(values)
+	print "Residual:", analysis.mean(stations)-np.mean(values)
+	#map the data
+	Mapper.objectiveMap(bounds, x, y, values, station_locs,
+						title='test',
+						cbar_label='test', show=True, save_name=None)
+
+if __name__ == "__main__":
+
+	testing()

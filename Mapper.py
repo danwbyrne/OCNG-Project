@@ -57,7 +57,7 @@ def objectiveMap(bounds, x, y, values, station_locs=[], title='', cbar_label='',
 	#create the basemap using max-min lat/lon data from input data.
 	m = Basemap(llcrnrlon=bounds[1], llcrnrlat=bounds[3],
 				urcrnrlon=bounds[0], urcrnrlat=bounds[2],
-				resolution = 'f')
+				resolution = 'l')
 	
 	#apply the colormesh to the figure
 	m.pcolormesh(x, y, values, latlon=True, cmap=cmap)
@@ -90,3 +90,20 @@ def objectiveMap(bounds, x, y, values, station_locs=[], title='', cbar_label='',
 		pyplot.savefig(save_name, format='png')
 		print "saved to:", save_name
 		pyplot.clf()
+
+def test_plot(bounds, stations, attr):
+
+	fig = pyplot.figure(figsize=(8,8))
+
+	#create the basemap using max-min lat/lon data from input data.
+	m = Basemap(llcrnrlon=bounds[1], llcrnrlat=bounds[3],
+				urcrnrlon=bounds[0], urcrnrlat=bounds[2],
+				resolution = 'l')
+
+	x_stat, y_stat, values = [],[],[]
+	for station in stations:
+		x_stat.append(station.x); y_stat.append(station.y); values.append(station.getAttr(attr))
+
+	m.scatter(x_stat, y_stat, c = values, cmap='gray')
+
+	pyplot.show(fig)

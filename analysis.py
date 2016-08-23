@@ -1,6 +1,7 @@
 import numpy as np
 import time, operator, math
 from numpy.linalg import inv
+from pylab import *
 
 #returns a list of AT MOST N stations within the range of max_range, if
 #it cannot find 20 points it returns as many as it can.
@@ -15,23 +16,26 @@ def findNClosest(point, stations, N, max_range):
 
 	#keep building return_dict until one of the conditions is not met.
 	while (len(return_list) < N) and (station[1] <= max_range):
-		return_list.append(station)
+		return_list.append(station[0])
 		station = sorted_dists.pop()
 
 	return return_list
 
+#plugs a distance into the spherical formula and returns a covariance
+def spherical(distance, alpha, sill=1.):
+	if distance > alpha:
+		return 0.
+	return sill*(1.-1.5*(distance/alpha) + .5*((distance/alpha)**3))
+
 #calculates the mean value of attribute in a list of points, or in a tuple style like returned by FindNClosest.
-def mean(points, attr):
+def mean(points):
 	sss = 0.
 	try: 
-		for point in points: sss += point.getAttr(attr)
+		for point in points: sss += point.value
 	except: 
-		for point in points: sss += point[0].getAttr(attr)
+		for point in points: sss += point[0].value
 
 	return sss / len(points)
-
-def exponential(distance, alpha):
-	return math.exp(-(distance**2)/alpha)
 
 #runs a Barnes Analysis on a given grid; alpha controls radius of influence
 #that a station has, gamma controls smoothness of the interpolation.
@@ -99,42 +103,62 @@ def Barnes(points, stations, attr, alpha, gamma, N=20, dev_view=False):
 
 	return g_final
 
+#returns a covariance matrix of station -> station distances, M x M
+def cov_mat(stations, funct, alpha):
+	mat = np.zeros((len(stations), len(stations)), dtype = np.float)
 
-def Kriging(points, stations, attr, weight_func, alpha, N=20):
-	print "Starting Kriging Interpolation"
-	shape = len(points), len(points[0])
-	alpha = 5.052*(((2*alpha)/math.pi)**2)
-	runs  = 0.
+	for j in range(len(stations)):
+		for i in range(len(stations)):
+			mat[j][i] = stations[j].distance(stations[i])
+			mat[j][i] = funct(mat[j][i], alpha)
 
-	final = np.zeros(shape, dtype = np.float)
+	return mat
 
-	#go through all the points
-	for j in range(shape[0]):
-		for i in range(shape[1]):
-			#at each point we'll have N estimators, so an NxN covariance matrix and
-			#a 1xN weight matrix for obtaining or final weight matrix
-			estimators = findNClosest(points[j][i], stations, N, alpha)
-			mmm        = mean(estimators, attr)
-			cov_mat    = np.zeros((len(estimators),len(estimators)), dtype = np.float)
-			weights    = np.zeros(len(estimators), dtype = np.float)
-			values     = np.zeros(len(estimators), dtype = np.float)
+#returns covariance vector of point -> station distances, 1 x N
+def cov_vect(point, stations, funct, alpha):
+	mat = np.zeros(len(stations), dtype = np.float)
 
-			#set up our covariance matrix and our weight matrix at the same time
-			for ii in range(len(estimators)):
-				weights[ii] = weight_func(estimators[ii][1], alpha)
-				values[ii]  = estimators[ii][0].getAttr(attr)
-				for jj in range(len(estimators)):
-					cov_mat[jj][ii] = weight_func(estimators[ii][0].distance(estimators[jj][0]), alpha)
+	for ss in range(len(stations)):
+		mat[ss] = funct(point.distance(stations[ss]), alpha)
 
-			cov_inv = inv(cov_mat)
-			weights = np.dot(cov_inv, weights)
-
-			final[j][i] = mmm + np.dot(weights, values)
-
-			runs += 1.
-			print str(runs/(shape[0]*shape[1])*100.),"percent complete"
+	return mat
 
 
 
-	return final
+#SUPER DIRTY ATM
+#TODOS: clean it up, getting findNClosest points working, optimization
+#probably want to rewrite anything using a form for the full program function such
+#that you can define the analysis type as an argument instead of having multiple functions
+#that do basically the same thing
+def kriging(points, stations, funct, alpha=500):
+	shape = (len(points), len(points[0]))
+	size = shape[0]*shape[1]
+	count = 1.
+	print "Number of points: ", size
+
+	output = np.zeros(shape, dtype = np.float)
+
+	for j in range(len(points)):
+		for i in range(len(points[0])):
+
+			close_stats = findNClosest(points[j][i], stations, 16, 1000)
+			nnn = len(close_stats)
+			mmm = mean(close_stats)
+			values = np.zeros(nnn, dtype = np.float)
+			for z in range(nnn):
+				values[z] = close_stats[z].value - mmm
+
+			point_covs  = cov_vect(points[j][i], close_stats, funct, alpha)
+			stat_covs   = cov_mat(close_stats, funct, alpha)
+
+			weights     = np.dot(inv(stat_covs),point_covs)
+
+			value = np.dot(weights, values)
+
+			output[j][i] = value + mmm
+			print count/float(size)
+			count += 1
+
+	print "kriging complete"
+	return output
 
