@@ -7,17 +7,12 @@ import sys
 
 plot_dir = "Plots\\"
 
-def map(data):
-
-	array = np.asarray(data)
-	gradient = ['black','blue','green','yellow','red','purple','white']
-	cmap = mpl.colors.LinearSegmentedColormap.from_list('my_colormap', gradient, 256)
-	bounds = [0,3,6,9]
-	norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
-	img = pyplot.imshow(array, interpolation='nearest',
-						 cmap = cmap, origin='lower')
-
-	pyplot.colorbar(img, cmap=cmap)
+def semiMap(model, xs, ys, c0, alpha):
+	pyplot.plot(xs,ys, '.')
+	aa = [alpha for i in range(len(xs))]
+	cs = [c0 for i in range(len(xs))]
+	zs = map(model, xs, aa, cs)
+	pyplot.plot(xs, zs, '-')
 	pyplot.show()
 
 def multiPlot(data_list, titles, pdf_name):
@@ -57,7 +52,7 @@ def objectiveMap(bounds, x, y, values, station_locs=[], title='', cbar_label='',
 	#create the basemap using max-min lat/lon data from input data.
 	m = Basemap(llcrnrlon=bounds[1], llcrnrlat=bounds[3],
 				urcrnrlon=bounds[0], urcrnrlat=bounds[2],
-				resolution = 'l')
+				resolution = 'f')
 	
 	#apply the colormesh to the figure
 	m.pcolormesh(x, y, values, latlon=True, cmap=cmap)
@@ -91,19 +86,6 @@ def objectiveMap(bounds, x, y, values, station_locs=[], title='', cbar_label='',
 		print "saved to:", save_name
 		pyplot.clf()
 
-def test_plot(bounds, stations, attr):
-
-	fig = pyplot.figure(figsize=(8,8))
-
-	#create the basemap using max-min lat/lon data from input data.
-	m = Basemap(llcrnrlon=bounds[1], llcrnrlat=bounds[3],
-				urcrnrlon=bounds[0], urcrnrlat=bounds[2],
-				resolution = 'l')
-
-	x_stat, y_stat, values = [],[],[]
-	for station in stations:
-		x_stat.append(station.x); y_stat.append(station.y); values.append(station.getAttr(attr))
-
-	m.scatter(x_stat, y_stat, c = values, cmap='gray')
-
-	pyplot.show(fig)
+def histogram(values, bins=10):
+	pyplot.hist(values, bins, range=None, normed=True)
+	pyplot.show()

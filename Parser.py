@@ -1,5 +1,7 @@
 import csv
 import os
+import numpy as np
+from Data import *
 
 #formatting stuff, its kind of nasty and preliminary set up of the 
 #csv files can be neccessary to get rid of unneccesary titles etc.
@@ -28,7 +30,6 @@ def readCSV(filedir):
 def multiReadCSV(filedir):
 	return_dicts = []
 	for fff in os.listdir(filedir):
-		if fff.endswith(".csv"):
 			return_dicts.extend(readCSV(filedir + fff))
 
 	return return_dicts
@@ -75,7 +76,7 @@ def readTXT(filedir, bottom_only=False):
 					key = key[0] + " " + key[1]
 				except:
 					key = key[0]
-				key = key.strip(',')
+				key = key.strip(',').strip('\r')
 				keys.append(key)
 
 		#now to actually get the data and assign it, this part is simpler.	
@@ -115,3 +116,25 @@ def multiReadTXT(filedir, bottom_only=False):
 			return_dicts.extend(readTXT(filedir + fff, bottom_only))
 
 	return return_dicts
+
+#saveCSV and loadCSV are different from above in that they are used
+#after analysis is run and do not require complex parsing to load
+def pointsToCSV(filename, points):
+	title = ['Longitude','Latitude','Value','TimeUTC']
+	if points[0].timeUTC == None: title = ['Longitude','Latitude','Value']
+
+
+	with open(filename, 'wb') as csvfile:
+		writer = csv.writer(csvfile, delimiter=" ", quotechar = ' ')
+		writer.writerow(title)
+		for point in points:
+			writer.writerow([str(point)])
+
+
+def loadPoints(filename):
+	return_points = Points([])
+
+	with open(filename, 'rb') as csvfile:
+		reader = csv.reader(csvfile, delimiter=" ", quotechar='|')
+		point  = reader.next().next()
+		print point.split(' ')
