@@ -1,55 +1,27 @@
+#Daniel Byrne, danwbyrne@gmail.com
+#TAMU Glider Map Project
+
 import matplotlib as mpl
 from matplotlib import pyplot
 from matplotlib.backends.backend_pdf import PdfPages
 from mpl_toolkits.basemap import Basemap, shiftgrid, cm
 import numpy as np
-import sys
+import analysis
 
 plot_dir = "Plots\\"
 
-def map(data):
+def objectiveMap(bounds, x, y, values, colormap, station_locs=[], title='', cbar_label='', show=True, save_name=None):
+	'''input: at least (location bounds, x-locations, y-locations, values and a colormap)
+	output: plots the data to a Basemap image and displays it.
+    additional display settings can be set, also providing station_locs
+    displays a marker at every location we used to generate our values'''
 
-	array = np.asarray(data)
-	gradient = ['black','blue','green','yellow','red','purple','white']
-	cmap = mpl.colors.LinearSegmentedColormap.from_list('my_colormap', gradient, 256)
-	bounds = [0,3,6,9]
-	norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
-	img = pyplot.imshow(array, interpolation='nearest',
-						 cmap = cmap, origin='lower')
+	cmap     = colormap
+	cmap.set_bad(color = 'white', alpha=1.) #set up our cmap to hide masked values
 
-	pyplot.colorbar(img, cmap=cmap)
-	pyplot.show()
+	values   = np.ma.array(values, mask=np.isnan(values)) #mask our bad data
 
-def multiPlot(data_list, titles, pdf_name):
-	pp       = PdfPages(plot_dir + pdf_name)
-	gradient = ['black','blue','green','yellow','red','purple','white']
-	cmap     = mpl.colors.LinearSegmentedColormap.from_list('my_colormap', gradient, 256)
-	bounds = [0,3,6,9]
-	norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
-
-	for i in range(len(data_list)):
-		array = np.asarray(data_list[i])
-
-		img = pyplot.imshow(array, interpolation='nearest',
-							 cmap = cmap, origin='lower')
-
-		pyplot.colorbar(img, cmap=cmap)
-		colorbar = True
-
-		pyplot.title((titles[i]))
-			
-		pyplot.savefig(pp, format='pdf')
-		pyplot.clf()
-
-	pp.close()
-
-#used in tangent with the BarnesMap function in main, station_locs need only be specified if
-#you want a marker placed where the interpolated data is calculated from.
-def objectiveMap(bounds, x, y, values, station_locs=[], title='', cbar_label='', show=True, save_name=None):
-	gradient = ['red','yellow','green']
-	cmap     = mpl.colors.LinearSegmentedColormap.from_list('my_colormap', gradient, 256)
-
-	fig = pyplot.figure(figsize=(8,8))
+	fig = pyplot.figure(figsize=(12,12)) #setup our figure
 	title = pyplot.title(title)
 	title.set(y = title.get_position()[1] + .05)
 	title.set(x = title.get_position()[0] - .01)
@@ -90,3 +62,49 @@ def objectiveMap(bounds, x, y, values, station_locs=[], title='', cbar_label='',
 		pyplot.savefig(save_name, format='png')
 		print "saved to:", save_name
 		pyplot.clf()
+
+
+def plotSemivar(stations, model, max_range, bw, linear=False, show=True, title=None, mlabel=""):
+	'''input: at least (stations, chosen model, max_range, lag bandwidth)
+	output: given input station data and a model we want to try this function
+	calculates our datas semivariance, finds an optimized model, displays it 
+	and returns the optimized model as a function of distance'''
+
+	xs, ys, alpha = analysis.semivariogram(stations, model, bw)
+	print 'model alpha chosen: %s' % alpha 
+	if linear:
+		funct = analysis.makeLinear(xs, ys) #see documentation
+	else:
+		funct = analysis.reduceModel(model, alpha, ys[-1]) #reduce our 3-input model to a 1-input
+
+	#calculate what our model looks like
+	optxs = range(int(max_range)+1)
+	optys = [funct(x) for x in optxs]
+
+	if show:
+		fig = pyplot.figure(figsize=(8,8))
+		pyplot.plot(xs, ys, '.', label="Raw Semivariance")
+		pyplot.plot(optxs, optys, '-',linewidth=3, label=mlabel)
+
+		pyplot.xlabel("Distance (km)")
+		pyplot.ylabel("Semivariance(h)")
+		if title: pyplot.title(title)
+		pyplot.grid(True)
+		pyplot.legend(loc=4)
+
+		pyplot.show()
+
+	#Parser.saveData(xs, ys)  #see documentation for when this is useful
+
+	return funct   
+
+def plotHistogram(stations, num_bins, xlabel=None, title=None):
+	'''input: at least (stations, num_bins)
+	output: this function simple plots a histogram of given data'''
+	
+	n, bins, patches = pyplot.hist(stations.valueArray(), num_bins, normed=True)
+	pyplot.ylabel("# Of Data In Bin")
+	if xlabel: pyplot.xlabel(xlabel)
+	if title: pyplot.title(title)
+	pyplot.grid(True)
+	pyplot.show()

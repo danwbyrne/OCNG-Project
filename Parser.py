@@ -1,5 +1,76 @@
 import csv
 import os
+import numpy as np
+import Data
+
+
+###DBD Parser###
+
+var_dict = {'m_present_time': 584,
+			'm_gps_lat': 513,
+			'm_gps_lon': 514,
+			'm_depth': 449}
+
+def printDBD(filename):
+	'''returns a nicer looking version of the DBD file for testing/working with'''
+
+	fff      = open(filename, 'rb')
+
+	for i, line in enumerate(fff):
+		if i == 14:
+			var_list = line.split(' ') #this puts all of the variable names in a list
+			var_list.pop()             #some endline characters at the back of this list
+
+		if i == 15:
+			type_list = line.split(' ') #this is the value-type for each variable
+			type_list.pop()             #same as before, pop endline characters
+			var_list = [[var_list[j], type_list[j]] for j in range(len(var_list))]
+
+		if i == 17:
+			val_list = line.split(' ') #this is the actual value for each variable
+			val_list.pop()
+			return_list = [var_list[j].append(val_list[j]) for j in range(len(var_list))]
+
+	return var_list
+
+def DBDparseLine(line):
+	val_list = line.split(' ')
+	val_list.pop()
+
+	return_dict = {}
+	#gets a dictionary of the values we want
+	for key in var_dict.keys(): return_dict[key] = val_list[var_dict[key]]
+
+	return return_dict
+
+def saveData(xs, ys, save_name='test.csv'):
+	with open(save_name, 'wb') as myfile:
+		wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
+		for z in zip(xs, ys):
+			wr.writerow(z)
+
+
+
+def parseDBD(filename):
+
+	fff    = open(filename, 'rb')
+	points = []
+	for i, line in enumerate(fff):
+		if i > 16:
+			point = DBDparseLine(line)
+			flag = True
+			for value in point.values():
+				if value in ["NaN", "69696969"]:
+					flag = False
+			if flag:
+				point['m_gps_lat'] = float(point['m_gps_lat'])/100.
+				point['m_gps_lon'] = float(point['m_gps_lon'])/100.
+				point['m_depth']   = float(point['m_depth'])
+				points.append(point)
+
+	return points
+
+###END DBD Parser###
 
 #formatting stuff, its kind of nasty and preliminary set up of the 
 #csv files can be neccessary to get rid of unneccesary titles etc.
@@ -28,7 +99,6 @@ def readCSV(filedir):
 def multiReadCSV(filedir):
 	return_dicts = []
 	for fff in os.listdir(filedir):
-		if fff.endswith(".csv"):
 			return_dicts.extend(readCSV(filedir + fff))
 
 	return return_dicts
@@ -75,7 +145,7 @@ def readTXT(filedir, bottom_only=False):
 					key = key[0] + " " + key[1]
 				except:
 					key = key[0]
-				key = key.strip(',')
+				key = key.strip(',').strip('\r')
 				keys.append(key)
 
 		#now to actually get the data and assign it, this part is simpler.	
@@ -116,13 +186,34 @@ def multiReadTXT(filedir, bottom_only=False):
 
 	return return_dicts
 
-def writeCSV(lon, lat, values, save_name):
-	with open(save_name, 'w') as csvfile:
-		writer = csv.writer(csvfile, delimiter=',',
-							quotechar='|', quoting=csv.QUOTE_MINIMAL)
+#pointstoCSV and loadPoints are different from above in that they are used
+#after analysis is run and do not require complex parsing to load
+def pointsToCSV(filename, points):
+	'''takes Point objects and converts them to lat/lon/value lines of a csv and saves'''
+	title = ['Longitude','Latitude','Value','TimeUTC']
+	if points[0].timeUTC == None: title = ['Longitude','Latitude','Value']
 
-		writer.writerow(['longitude'] + ['latitude'] + ['Surface Salinity (PSS78)'])
-		for j in range(len(lat)-1):
-			for i in range(len(lat[0])-1):
-				writer.writerow([str(lon[j][i])] + [str(lat[j][i])] + [str(values[j][i])])
 
+	with open(filename, 'wb') as csvfile:
+		writer = csv.writer(csvfile, delimiter=" ", quotechar = ' ')
+		writer.writerow(title)
+		for point in points:
+			writer.writerow([str(point)])
+
+
+def loadPoints(filename):
+	'''reads in lat/lon/value from a csvfile and converts them to Point objects'''
+	return_points = []
+
+	with open(filename, 'rb') as csvfile:
+		reader = csv.reader(csvfile, delimiter=" ", quotechar='|')
+		line  = reader.next()
+		while True:
+			try:
+				line = reader.next()
+				point = Data.Point(float(line[1]), float(line[3]), float(line[5]))
+				return_points.append(point)
+			except:
+				break
+
+	return return_points
